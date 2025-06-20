@@ -1,0 +1,244 @@
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100vh;
+
+}
+
+.overall-cont{
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background-image: url(img/5_background/bg.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+}
+
+
+canvas{
+    background-color: black;
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.canvas-cont{
+    position: relative;
+    max-height: 480px;
+    max-width: 720px;
+    margin: 0px 10px;
+}
+
+.first-screen-cont{
+    display: contents;
+}
+
+.first-screen{
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.screen-start{
+    height: 100%;
+    width: 100%;
+}
+
+.start-button-cont{
+    top: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+}
+
+.start-button-img{
+display: flex;
+height: 100px;
+justify-content: center;
+cursor: pointer;
+}
+
+.second-start-cont{
+    position: absolute;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    z-index: 999;
+}
+
+nav{
+    FONT-WEIGHT: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.nav-img{
+    height: 30px;
+    cursor: pointer;
+}
+
+.game-nav{
+    display: flex;
+    justify-content: space-around;
+}
+
+.controller-exp-cont{
+    position: absolute;
+    top: 90px;
+    bottom: 90px;
+    right: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 998;
+}
+
+.cont-inner-cont{
+    border: 2px solid black;
+    width: 300px;
+    height: 300px;
+    border-radius: 20px;
+    background-color: rgb(245 222 201);
+    opacity: 0.85;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.controller-dis{
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-top: 10px;
+
+}
+
+.button-action{
+    margin-left: 20px;
+}
+
+.controll-button-img{
+    height: 50px;
+}
+
+.fullscreenClose-icon-cont{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.mobile-icons-img{
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.mobile-cont{
+    display: flex;
+    justify-content:space-around;
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+}
+
+.mobile-control-cont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.d-none{
+    display: none;
+}
+
+.turn-device-cont{
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.8;
+    top: 0px;
+    z-index: 999;
+    display: none;
+}
+
+.game-over-screen-cont{
+    display: none;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* for Smartphones */
+@media only screen and (max-width: 720px){
+canvas {
+    width: 100% !important;
+    }
+    h1{
+        display: none;
+    }
+    .canvas-cont{
+    max-height: 320px;
+    max-width: 560px;
+    }
+
+    .game-nav{
+        position: absolute !important;
+        top: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+}
+
+/* for Smartphones */
+@media only screen and (max-height: 480px){
+    canvas {
+        height: 100vh !important;
+        }
+        h1{
+            display: none;
+        }
+        .canvas-cont{
+         max-height: 400px;
+         max-width: 560px;
+        }
+/*        .mobile-cont{
+            display: flex;
+        } */
+        .game-nav{
+            position: absolute !important;
+            top: 10px !important;
+            left: 10px !important;
+            right: 10px !important;
+        }
+    }
+
+    @media only screen and (max-width: 480px){
+        .turn-device-cont{
+            display: flex;
+        }
+
+    }
