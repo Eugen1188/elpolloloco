@@ -32,35 +32,14 @@ class World {
     }
 
     startGameLoop() {
-        let lastTime = performance.now();
-        let accumulator = 0;
         let frameCounter = 0;
-        const fixedStep = 1000 / 60;
 
-        const loop = (timestamp) => {
-            let deltaTime = timestamp - lastTime;
-            lastTime = timestamp;
+        const loop = () => {
+            frameCounter++;
 
-            if (deltaTime > 100) {
-                deltaTime = 100;
-            }
-
-            accumulator += deltaTime;
-
-            let updates = 0;
-
-            while (accumulator >= fixedStep && updates < 3) {
-                frameCounter++;
-                this.updateGame(frameCounter);
-                accumulator -= fixedStep;
-                updates++;
-            }
-
-            if (updates === 3) {
-                accumulator = 0;
-            }
-
+            this.updateGame(frameCounter);
             this.draw();
+
             requestAnimationFrame(loop);
         };
 
@@ -74,7 +53,7 @@ class World {
         this.character.movement();
 
         this.level.enemies.forEach((enemy) => {
-            if (enemy.updateGravity) {
+            if (enemy.updateGravity && this.isNearScreen(enemy)) {
                 enemy.updateGravity();
             }
         });
@@ -85,11 +64,13 @@ class World {
             }
         });
 
-        this.level.clouds.forEach((cloud) => {
-            if (cloud.updateAnimation) {
-                cloud.updateAnimation();
-            }
-        });
+        if (!isMobile || frameCounter % 2 === 0) {
+            this.level.clouds.forEach((cloud) => {
+                if (cloud.updateAnimation && this.isNearScreen(cloud)) {
+                    cloud.updateAnimation();
+                }
+            });
+        }
 
         if (frameCounter % 2 === 0) {
             this.character.animations();
@@ -103,7 +84,7 @@ class World {
             this.character.idle();
 
             this.level.enemies.forEach((enemy) => {
-                if (enemy.updateAnimation) {
+                if (enemy.updateAnimation && this.isNearScreen(enemy)) {
                     enemy.updateAnimation();
                 }
             });
@@ -127,7 +108,7 @@ class World {
             this.checkThrowObjects();
         }
 
-        const enemyHitFrequency = isMobile ? 12 : 8;
+        const enemyHitFrequency = isMobile ? 18 : 12;
 
         if (frameCounter % enemyHitFrequency === 0) {
             this.checkEnemyHitsPeppe();
@@ -188,7 +169,7 @@ class World {
 
     checkEnemyHitsPeppe() {
         this.level.enemies.forEach((enemy) => {
-            if (this.hitboxColliding(enemy)) {
+            if (this.isNearScreen(enemy) && this.hitboxColliding(enemy)) {
                 this.PeppeGetHit();
             }
         });
@@ -224,6 +205,7 @@ class World {
         this.throwableObject.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
                 if (
+                    this.isNearScreen(enemy) &&
                     this.throwableObject.includes(bottle) &&
                     this.bottleCollidingWithEnemy(bottle, enemy)
                 ) {
@@ -241,10 +223,12 @@ class World {
 
     hitEnemyWithBottle(enemy, bottle) {
         enemy.hit(1);
+
         this.throwableObject = this.throwableObject.filter(
             (currentBottle) => currentBottle !== bottle
         );
-        this.bottle_break_sound.play();
+
+        this.playSound(this.bottle_break_sound);
     }
 
     throwBottle() {
@@ -259,7 +243,7 @@ class World {
 
     checkPeppeHitsEnemy() {
         this.level.enemies.forEach((enemy) => {
-            if (this.jumpOnEnemy(enemy)) {
+            if (this.isNearScreen(enemy) && this.jumpOnEnemy(enemy)) {
                 this.character.jump();
                 enemy.energy--;
             }
@@ -277,7 +261,7 @@ class World {
 
     checkCollisionsCoins() {
         this.level.coins.forEach((coin) => {
-            if (this.character.isColliding(coin)) {
+            if (this.isNearScreen(coin) && this.character.isColliding(coin)) {
                 this.collectCoin(coin);
 
                 if (!this.maxCoins()) {
@@ -292,7 +276,7 @@ class World {
     }
 
     collectCoin(coin) {
-        this.coin_sound.play();
+        this.playSound(this.coin_sound);
 
         let coinNum = this.level.coins.indexOf(coin);
         this.level.coins.splice(coinNum, 1);
@@ -301,19 +285,18 @@ class World {
 
     checkCollisionBottles() {
         this.level.bottles.forEach((bottle) => {
-            if (this.character.isColliding(bottle)) {
+            if (this.isNearScreen(bottle) && this.character.isColliding(bottle)) {
                 this.collectBottle(bottle);
             }
         });
     }
 
     collectBottle(bottle) {
-        this.bottle_sound.play();
-
         let bottleNum = this.level.bottles.indexOf(bottle);
-        this.level.bottles.splice(bottleNum, 1);
 
         if (this.freeBottleSpace()) {
+            this.playSound(this.bottle_sound);
+            this.level.bottles.splice(bottleNum, 1);
             this.character.bottles++;
             this.updateStatusBarBottle();
         }
@@ -325,6 +308,13 @@ class World {
 
     updateStatusBarBottle() {
         this.statusBarBottle.setPercentageBottle(this.character.bottles);
+    }
+
+    playSound(sound) {
+        if (sound.paused) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
     }
 
     draw() {
@@ -352,8 +342,30 @@ class World {
 
     addObjectsToMap(objects) {
         objects.forEach((object) => {
-            this.addTopMap(object);
+            if (this.isVisibleOnScreen(object)) {
+                this.addTopMap(object);
+            }
         });
+    }
+
+    isVisibleOnScreen(object) {
+        let screenX = object.x + this.camera_x;
+        let extraSpace = 250;
+
+        return (
+            screenX + object.width > -extraSpace &&
+            screenX < this.canvas.width + extraSpace
+        );
+    }
+
+    isNearScreen(object) {
+        let screenX = object.x + this.camera_x;
+        let extraSpace = 500;
+
+        return (
+            screenX + object.width > -extraSpace &&
+            screenX < this.canvas.width + extraSpace
+        );
     }
 
     addTopMap(movableObject) {
