@@ -1,18 +1,18 @@
 class MovableObject extends DrawableObjects {
-
     speed = 5;
     otherDirection = false;
-    speedY = 0
+    speedY = 0;
     acceleration = 2.5;
     lastHit = 0;
     energy = 100;
     energyEnemies = 1;
-    jump_sound = new Audio('audio/jump.mp3')
+
+    jump_sound = new Audio('audio/jump.mp3');
 
     applyGravity() {
-        // Gravity wird jetzt vom World-Loop aufgerufen
+        // Gravity wird vom World-Loop aufgerufen.
     }
-    
+
     updateGravity() {
         if (this.isAboveGround() || this.speedY > 0) {
             this.y -= this.speedY;
@@ -23,32 +23,36 @@ class MovableObject extends DrawableObjects {
     }
 
     isAboveGround() {
-        if (this instanceof ThrowableObjects)
-            return true
+        if (this instanceof ThrowableObjects) {
+            return true;
+        }
+
         return this.y < 180;
     }
 
-    // character.isColliding(chicken); z.B
     isColliding(mo) {
-        return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+        return (
+            this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom
+        );
     }
 
     hit(damage) {
         this.energy -= damage;
+
         if (this.energy < 0) {
             this.energy = 0;
-        }
-        else {
+        } else {
             this.lastHit = new Date().getTime();
         }
     }
 
     isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
-        timepassed = timepassed / 1000; // Difference in s
+        let timepassed = new Date().getTime() - this.lastHit;
+        timepassed = timepassed / 1000;
+
         return timepassed < 0.7;
     }
 
@@ -57,7 +61,7 @@ class MovableObject extends DrawableObjects {
     }
 
     playAnimation(images) {
-        let i = this.currentImage % images.length; // let i = 7 % 6; => 1, Rest 1
+        let i = this.currentImage % images.length;
         let path = images[i];
         this.img = this.imageCache[path];
         this.currentImage++;
@@ -73,6 +77,14 @@ class MovableObject extends DrawableObjects {
 
     jump() {
         this.speedY = 25;
-        this.jump_sound.play()
+
+        if (!this.isMobileDevice()) {
+            this.jump_sound.currentTime = 0;
+            this.jump_sound.play().catch(() => {});
+        }
+    }
+
+    isMobileDevice() {
+        return window.innerWidth <= 900 || window.innerHeight <= 520;
     }
 }

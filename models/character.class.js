@@ -70,6 +70,7 @@ class Character extends MovableObject {
     bottles = 0;
     world;
     idleTimer = 0;
+
     isWalkingSoundPlaying = false;
     isGetHitSoundPlaying = false;
 
@@ -133,7 +134,7 @@ class Character extends MovableObject {
     }
 
     isMobileDevice() {
-        return window.innerWidth <= 900 || window.innerHeight <= 520 || "ontouchstart" in window;
+        return window.innerWidth <= 900 || window.innerHeight <= 520;
     }
 
     startWalkingSound() {

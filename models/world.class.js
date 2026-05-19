@@ -34,17 +34,12 @@ class World {
     startGameLoop() {
         let frameCounter = 0;
         let lastFrameTime = 0;
-        const desktopFrameDuration = 1000 / 60;
+        const frameDuration = 1000 / 60;
 
         const loop = (timestamp) => {
-            const isMobile = this.isMobileDevice();
+            if (timestamp - lastFrameTime >= frameDuration) {
+                lastFrameTime = timestamp - ((timestamp - lastFrameTime) % frameDuration);
 
-            if (isMobile) {
-                frameCounter++;
-                this.updateGame(frameCounter);
-                this.draw();
-            } else if (timestamp - lastFrameTime >= desktopFrameDuration) {
-                lastFrameTime = timestamp - ((timestamp - lastFrameTime) % desktopFrameDuration);
                 frameCounter++;
                 this.updateGame(frameCounter);
                 this.draw();
@@ -57,7 +52,7 @@ class World {
     }
 
     isMobileDevice() {
-        return window.innerWidth <= 900 || window.innerHeight <= 520 || "ontouchstart" in window;
+        return window.innerWidth <= 900 || window.innerHeight <= 520;
     }
 
     updateGame(frameCounter) {
@@ -325,6 +320,10 @@ class World {
     }
 
     playSound(sound) {
+        if (this.isMobileDevice()) {
+            return;
+        }
+
         if (sound.paused) {
             sound.currentTime = 0;
             sound.play().catch(() => {});
