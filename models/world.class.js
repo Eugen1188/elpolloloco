@@ -20,15 +20,16 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.draw();
         this.setWorld();
         this.run();
+        this.startRenderLoop();
         this.checkForGameOver();
     }
 
     checkForGameOver() {
-        setInterval(() => {
+        let checkGameOverId = setInterval(() => {
             if (this.character.isDead()) {
+                clearInterval(checkGameOverId);
                 setTimeout(() => {
                     this.showYouLostScreen();
                     this.clearAllIntervals();
@@ -36,6 +37,7 @@ class World {
                     gameMusic.pause();
                 }, 1500);
             } else if (this.endboss.isDead()) {
+                clearInterval(checkGameOverId);
                 setTimeout(() => {
                     this.showGameOverScreen();
                     this.clearAllIntervals();
@@ -81,9 +83,8 @@ class World {
     }
 
     run() {
-        let lastEnemyHitCheck = 0;
-        let lastThrowCheck = 0;
         let frameCounter = 0;
+        let isMobile = window.innerWidth <= 720;
         
         const gameLoop = () => {
             frameCounter++;
@@ -95,12 +96,12 @@ class World {
             this.checkPlayMusic();
             this.checkBossFight();
             
-            // Check enemy hits every 3-4 frames (~200ms at 60fps)
-            if (frameCounter % 12 === 0) {
+            // On mobile: reduce collision checks for performance
+            let checkFrequency = isMobile ? 20 : 12;
+            if (frameCounter % checkFrequency === 0) {
                 this.checkEnemyHitsPeppe();
             }
             
-            // Check throw objects every frame (was 100ms, now 16-17ms)
             this.checkThrowObjects();
             
             requestAnimationFrame(gameLoop);
@@ -233,31 +234,32 @@ class World {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)  // canvas wird jedes mal neu geladen
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.translate(this.camera_x, 0)
+        this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.throwableObject);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.enemies);
-        this.ctx.translate(-this.camera_x, 0)
-        // ---- Space for fixed objects ------
+        this.ctx.translate(-this.camera_x, 0);
+        
         this.addTopMap(this.statusBarHealth);
         this.addTopMap(this.statusBarBottle);
         this.addTopMap(this.statusBarCoin);
 
         this.ctx.translate(this.camera_x, 0);
-
         this.addTopMap(this.character);
-
-        this.ctx.translate(- this.camera_x, 0)
-
-        let self = this;
-        requestAnimationFrame(function () {
-            self.draw();
-        });
+        this.ctx.translate(-this.camera_x, 0);
+    }
+    
+    startRenderLoop() {
+        const gameRender = () => {
+            this.draw();
+            requestAnimationFrame(gameRender);
+        };
+        requestAnimationFrame(gameRender);
     }
 
     addObjectsToMap(objects) {

@@ -163,7 +163,9 @@ function showCanvasinFull() {
   canvasCont.style.maxWidth = 'none';
   canvasCont.style.maxHeight = 'none';
   canvas.style.width = '100%';
-  canvas.style.height = '100vh';
+  canvas.style.height = '100%';
+  canvasCont.style.width = '100vw';
+  canvasCont.style.height = '100dvh';
   headline.classList.add('d-none');
 }
 
@@ -171,19 +173,30 @@ function showCanvasinFull() {
 
 function enterFullscreen(element) {
   if (element.requestFullscreen) {
-    element.requestFullscreen();
-  } else if (element.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
-    element.msRequestFullscreen();
-  } else if (element.webkitRequestFullscreen) {  // iOS Safari
+    element.requestFullscreen().catch(() => {
+      console.log('Fullscreen nicht unterstützt oder blockiert');
+    });
+  } else if (element.webkitRequestFullscreen) {
     element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  } else if (element.webkitEnterFullscreen) {
+    element.webkitEnterFullscreen();
+  } else {
+    console.log('Fullscreen API nicht verfügbar');
   }
 }
 
 
 function exitFullscreen() {
   if (document.exitFullscreen) {
-    document.exitFullscreen();
+    document.exitFullscreen().catch(() => {
+      console.log('Fullscreen beenden nicht unterstützt');
+    });
   } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.webkitEnterFullscreen) {
+    // Falls nur webkit verfügbar ist
     document.webkitExitFullscreen();
   }
 }
