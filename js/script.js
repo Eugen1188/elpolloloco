@@ -10,8 +10,9 @@ function startGame() {
     checkPlayMusic();
     showResponsiveBtn();
 
-    if (fullscreenMode && gameStarted) {
+    if (fullscreenMode) {
         showCanvasinFull();
+        showNavinFull();
     }
 }
 
@@ -26,15 +27,22 @@ function showGame() {
 }
 
 function showResponsiveBtn() {
-    if (window.innerHeight < 480 && gameStarted) {
-        let mobileControl = document.getElementById('mobile-cont');
+    let mobileControl = document.getElementById('mobile-cont');
+
+    if (!mobileControl) {
+        return;
+    }
+
+    if ((window.innerHeight < 520 || window.innerWidth < 900) && gameStarted) {
         mobileControl.classList.remove('d-none');
     }
 }
 
 function checkPlayMusic() {
     if (playMusic) {
-        gameMusic.play();
+        gameMusic.play().catch(() => {
+            console.log('Musik konnte nicht automatisch gestartet werden');
+        });
     }
 }
 
@@ -62,7 +70,9 @@ function muteSound() {
         muteIcon(mute, unmute, muteInGame, unmuteInGame);
     } else {
         if (gameStarted) {
-            gameMusic.play();
+            gameMusic.play().catch(() => {
+                console.log('Musik konnte nicht gestartet werden');
+            });
         }
 
         playMusic = true;
@@ -88,15 +98,17 @@ async function setFullscreen() {
     let fullscreenCont = document.getElementById('canvas-cont');
 
     if (!fullscreenMode) {
-        try {
-            await enterFullscreen(fullscreenCont);
-        } catch (error) {
-            console.log('Native Fullscreen blockiert, CSS-Fallback wird genutzt');
-        }
-
         showCanvasinFull();
         showNavinFull();
         fullscreenMode = true;
+
+        try {
+            await enterFullscreen(fullscreenCont);
+        } catch (error) {
+            console.log('Echter Fullscreen nicht verfügbar, CSS-Fallback aktiv');
+        }
+
+        setTimeout(resizeCanvasToViewport, 100);
     } else {
         try {
             await exitFullscreen();
@@ -136,8 +148,6 @@ function closeFullCanvas() {
     canvas.style.height = '';
     canvasCont.style.width = '';
     canvasCont.style.height = '';
-    canvasCont.style.maxWidth = '';
-    canvasCont.style.maxHeight = '';
 
     if (headline) {
         headline.classList.remove('d-none');
@@ -146,17 +156,18 @@ function closeFullCanvas() {
 
 function showNavinFull() {
     let gameNav = document.getElementById('game-nav');
-    gameNav.classList.add('fullscreen-nav');
+
+    if (gameNav) {
+        gameNav.classList.add('fullscreen-nav');
+    }
 }
 
 function closeFullNav() {
     let gameNav = document.getElementById('game-nav');
-    gameNav.classList.remove('fullscreen-nav');
 
-    gameNav.style.position = '';
-    gameNav.style.top = '';
-    gameNav.style.left = '';
-    gameNav.style.right = '';
+    if (gameNav) {
+        gameNav.classList.remove('fullscreen-nav');
+    }
 }
 
 function resizeCanvasToViewport() {
@@ -174,8 +185,12 @@ function resizeCanvasToViewport() {
 }
 
 function enterFullscreen(element) {
+    if (!element) {
+        return Promise.reject('Kein Fullscreen-Element gefunden');
+    }
+
     if (element.requestFullscreen) {
-        return element.requestFullscreen();
+        return element.requestFullscreen({ navigationUI: 'hide' });
     }
 
     if (element.webkitRequestFullscreen) {
@@ -229,7 +244,7 @@ window.addEventListener('orientationchange', () => {
     setTimeout(() => {
         resizeCanvasToViewport();
         showResponsiveBtn();
-    }, 200);
+    }, 300);
 });
 
 if (window.visualViewport) {

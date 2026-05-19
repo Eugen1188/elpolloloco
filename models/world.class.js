@@ -25,20 +25,28 @@ class World {
     this.checkForGameOver();
   }
 
-  startGameLoop() {
+startGameLoop() {
+    let lastTime = 0;
     let frameCounter = 0;
 
-    const loop = () => {
-      frameCounter++;
+    const loop = (timestamp) => {
+        const isMobile = window.innerWidth <= 720 || window.innerHeight <= 480;
+        const targetFPS = isMobile ? 30 : 60;
+        const frameInterval = 1000 / targetFPS;
 
-      this.updateGame(frameCounter);
-      this.draw();
+        if (timestamp - lastTime >= frameInterval) {
+            lastTime = timestamp;
+            frameCounter++;
 
-      requestAnimationFrame(loop);
+            this.updateGame(frameCounter);
+            this.draw();
+        }
+
+        requestAnimationFrame(loop);
     };
 
     requestAnimationFrame(loop);
-  }
+}
 
   updateGame(frameCounter) {
     const isMobile = window.innerWidth <= 720;

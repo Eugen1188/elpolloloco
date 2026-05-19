@@ -1,14 +1,19 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: black;
+}
+
 body {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    width: 100vw;
-    min-height: 100dvh;
-    overflow: hidden;
-    overscroll-behavior: none;
-    touch-action: none;
 }
 
 body.fullscreen-fallback {
@@ -16,6 +21,7 @@ body.fullscreen-fallback {
     inset: 0;
     width: 100vw;
     height: 100dvh;
+    overflow: hidden;
     background: black;
 }
 
@@ -24,7 +30,7 @@ body.fullscreen-fallback {
     flex-direction: column;
     align-items: center;
     display: flex;
-    width: 100%;
+    width: 100vw;
     height: 100dvh;
     background-image: url(img/5_background/bg.jpg);
     background-repeat: no-repeat;
@@ -46,16 +52,19 @@ canvas {
 
 .canvas-cont {
     position: relative;
-    width: 100%;
-    height: 100%;
-    max-height: 480px;
-    max-width: 720px;
+    width: 720px;
+    height: 480px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
     margin: 0 10px;
 }
 
 .canvas-cont.fullscreen-mode {
     position: fixed !important;
-    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
     width: 100vw !important;
     height: 100dvh !important;
     max-width: none !important;
@@ -67,10 +76,8 @@ canvas {
 }
 
 .canvas-cont.fullscreen-mode canvas {
-    width: 100vw !important;
-    height: 100dvh !important;
-    max-width: none !important;
-    max-height: none !important;
+    width: 100% !important;
+    height: 100% !important;
     border-radius: 0 !important;
 }
 
@@ -148,6 +155,7 @@ nav {
     top: 10px !important;
     left: 10px !important;
     right: 10px !important;
+    bottom: auto !important;
     z-index: 10000;
 }
 
@@ -252,15 +260,16 @@ nav {
     height: 100%;
 }
 
-/* for Smartphones */
 @media only screen and (max-width: 720px) {
     h1 {
         display: none;
     }
 
     .canvas-cont:not(.fullscreen-mode) {
+        width: calc(100vw - 20px);
+        height: auto;
+        aspect-ratio: 720 / 480;
         max-height: 320px;
-        max-width: 560px;
     }
 
     .game-nav {
@@ -271,15 +280,16 @@ nav {
     }
 }
 
-/* for small height devices */
 @media only screen and (max-height: 480px) {
     h1 {
         display: none;
     }
 
     .canvas-cont:not(.fullscreen-mode) {
-        max-height: 400px;
-        max-width: 560px;
+        width: calc(100vw - 20px);
+        height: calc(100dvh - 20px);
+        max-width: 720px;
+        max-height: 480px;
     }
 
     .game-nav {
@@ -296,7 +306,6 @@ nav {
     }
 }
 
-/* Touch optimization */
 @media (hover: none) and (pointer: coarse) {
     .mobile-icons-img {
         min-width: 44px;
