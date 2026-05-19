@@ -1,12 +1,13 @@
 class Endboss extends MovableObject {
+    height = 360;
+    width = 225;
+    y = 20;
 
-    height = 400;
-    width = 250;
-    y = 55;
     energy = 3;
     startFight = false;
     firstContact = false;
     getHit = false;
+
     getHitSound = new Audio('audio/bossHit.mp3');
 
     IMAGES_IDLE = [
@@ -15,7 +16,6 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/2_alert/G7.png',
         'img/4_enemie_boss_chicken/2_alert/G8.png',
         'img/4_enemie_boss_chicken/2_alert/G9.png'
-
     ];
 
     IMAGES_FIGHT = [
@@ -53,7 +53,6 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
-
     constructor() {
         super().loadImage('img/4_enemie_boss_chicken/2_alert/G5.png');
         this.loadImages(this.IMAGES_IDLE);
@@ -65,32 +64,33 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        // Animation wird jetzt vom World-Loop aufgerufen
+        // Animation wird vom World-Loop aufgerufen.
     }
-    
+
     updateAnimation() {
         if (this.isHurt()) {
             this.playAnimation(this.IMAGES_HURT);
-            this.getHitSound.play();
+            this.playHitSound();
         } else if (this.firstContact && !this.isDead()) {
             this.playAnimation(this.IMAGES_FIGHT);
             this.x -= 10;
         } else if (!this.firstContact) {
             this.playAnimation(this.IMAGES_IDLE);
-        } else {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            }
+        } else if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
         }
     }
 
-
+    playHitSound() {
+        if (this.getHitSound.paused) {
+            this.getHitSound.play();
+        }
+    }
 
     offset = {
         top: 0,
         bottom: 0,
         right: 0,
         left: 0
-    }
-
+    };
 }

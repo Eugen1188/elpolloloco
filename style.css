@@ -57,6 +57,7 @@ canvas {
     max-width: calc(100vw - 20px);
     max-height: calc(100dvh - 20px);
     margin: 0 10px;
+    overflow: hidden;
 }
 
 .canvas-cont.fullscreen-mode {
@@ -73,6 +74,7 @@ canvas {
     padding: 0 !important;
     z-index: 9999;
     background: black;
+    overflow: hidden;
 }
 
 .canvas-cont.fullscreen-mode canvas {
