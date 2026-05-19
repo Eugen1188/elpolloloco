@@ -28,18 +28,15 @@ class Chicken extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
-            if (this.energy == 1) {
-                this.playAnimation(this.IMAGES_WALKING);
-            }
-        }, 100);
-        setInterval(() => {
-            if (this.energy == 1) {
-                this.moveLeft();
-            }
-            this.checkForDeadEnemy();
-        }, 1000 / 60);
-
+        // Animation wird jetzt vom World-Loop aufgerufen
+    }
+    
+    updateAnimation() {
+        if (this.energy == 1) {
+            this.playAnimation(this.IMAGES_WALKING);
+            this.moveLeft();
+        }
+        this.checkForDeadEnemy();
     }
     
     checkForDeadEnemy() {

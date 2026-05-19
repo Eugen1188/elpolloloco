@@ -65,21 +65,23 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
-            if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-                this.getHitSound.play();
-            } else if (this.firstContact && !this.isDead()) {
-                this.playAnimation(this.IMAGES_FIGHT);
-                this.x -= 10;
-            } else if (!this.firstContact) {
-                this.playAnimation(this.IMAGES_IDLE);
-            } else {
-                if (this.isDead()) {
-                    this.playAnimation(this.IMAGES_DEAD);
-                }
+        // Animation wird jetzt vom World-Loop aufgerufen
+    }
+    
+    updateAnimation() {
+        if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+            this.getHitSound.play();
+        } else if (this.firstContact && !this.isDead()) {
+            this.playAnimation(this.IMAGES_FIGHT);
+            this.x -= 10;
+        } else if (!this.firstContact) {
+            this.playAnimation(this.IMAGES_IDLE);
+        } else {
+            if (this.isDead()) {
+                this.playAnimation(this.IMAGES_DEAD);
             }
-        }, 200);
+        }
     }
 
 

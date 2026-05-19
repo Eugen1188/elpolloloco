@@ -20,10 +20,11 @@ class ThrowableObjects extends MovableObject {
     throw(x, y) {
         this.speedY = 30;
         this.applyGravity();
-        setInterval(() => {
-            this.playAnimation(this.IMG_BOTTLE)
-            this.x += 20;
-        }, 50);
+    }
+    
+    updateThrowable() {
+        this.playAnimation(this.IMG_BOTTLE);
+        this.x += 20;
     }
 
     offset = {

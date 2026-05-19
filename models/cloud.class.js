@@ -12,10 +12,11 @@ class Cloud extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
-            this.moveLeft();
-        }, 1000/60);
-        
+        // Animation wird jetzt vom World-Loop aufgerufen
+    }
+    
+    updateAnimation() {
+        this.moveLeft();
     }
 
 }

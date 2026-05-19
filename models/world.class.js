@@ -84,10 +84,76 @@ class World {
 
     run() {
         let frameCounter = 0;
+        let animationCounter = 0;
+        let idleTimerCounter = 0;
+        let idleAnimationCounter = 0;
+        let enemyAnimationCounter = 0;
+        let throwableAnimationCounter = 0;
         let isMobile = window.innerWidth <= 720;
         
         const gameLoop = () => {
             frameCounter++;
+            animationCounter++;
+            idleTimerCounter++;
+            idleAnimationCounter++;
+            enemyAnimationCounter++;
+            throwableAnimationCounter++;
+            
+            // Apply gravity to all objects (every frame at 60fps)
+            this.character.updateGravity();
+            this.level.enemies.forEach(enemy => {
+                if (enemy.updateGravity) {
+                    enemy.updateGravity();
+                }
+            });
+            this.throwableObject.forEach(to => {
+                if (to.updateGravity) {
+                    to.updateGravity();
+                }
+            });
+            
+            // Character movement (60fps equivalent)
+            this.character.movement();
+            
+            // Character animation (every 40ms ~ 25fps)
+            if (animationCounter % 2 === 0) {
+                this.character.animations();
+            }
+            
+            // Idle timer (every 500ms)
+            if (idleTimerCounter % 30 === 0) {
+                this.character.increaseIdleTimer();
+            }
+            
+            // Idle animation (every 200ms)
+            if (idleAnimationCounter % 12 === 0) {
+                this.character.idle();
+            }
+            
+            // Enemy animations (every 200ms)
+            if (enemyAnimationCounter % 12 === 0) {
+                this.level.enemies.forEach(enemy => {
+                    if (enemy.updateAnimation) {
+                        enemy.updateAnimation();
+                    }
+                });
+            }
+            
+            // Throwable object animation (every 50ms ~ 20fps)
+            if (throwableAnimationCounter % 3 === 0) {
+                this.throwableObject.forEach(to => {
+                    if (to.updateThrowable) {
+                        to.updateThrowable();
+                    }
+                });
+            }
+            
+            // Cloud movement (every frame)
+            this.level.clouds.forEach(cloud => {
+                if (cloud.updateAnimation) {
+                    cloud.updateAnimation();
+                }
+            });
             
             // Main game logic every 60fps
             this.checkPeppeHitsEnemy();

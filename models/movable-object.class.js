@@ -10,14 +10,16 @@ class MovableObject extends DrawableObjects {
     jump_sound = new Audio('audio/jump.mp3')
 
     applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-            } else if (!this.isAboveGround()) {
-                this.speedY = 0;        // set speedY to 0 again, because after a jump it is < 0, we need speedY 0 for the "if-condition" when we jump on enemys, we can see when we come from top on the enemy;
-            }
-        }, 1000 / 25);
+        // Gravity wird jetzt vom World-Loop aufgerufen
+    }
+    
+    updateGravity() {
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+        } else if (!this.isAboveGround()) {
+            this.speedY = 0;
+        }
     }
 
     isAboveGround() {

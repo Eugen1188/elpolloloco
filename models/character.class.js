@@ -81,15 +81,11 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_ISDEAD);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONGIDLE);
-        this.animate();
         this.applyGravity();
     };
 
     animate() {
-        setInterval(() => this.movement(), 1000 / 60);
-        setInterval(() => this.animations(), 40);
-        setInterval(() => this.increaseIdleTimer(), 500);
-        setInterval(() => this.idle(), 200);
+        // Animation wird jetzt vom World-Loop aufgerufen, nicht durch setInterval
     }
  
     movement() {
