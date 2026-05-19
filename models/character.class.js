@@ -120,11 +120,20 @@ class Character extends MovableObject {
     }
 
     handleWalkingSound(moved) {
+        if (this.isMobileDevice()) {
+            this.stopWalkingSound();
+            return;
+        }
+
         if (moved && !this.isAboveGround() && !this.isDead()) {
             this.startWalkingSound();
         } else {
             this.stopWalkingSound();
         }
+    }
+
+    isMobileDevice() {
+        return window.innerWidth <= 900 || window.innerHeight <= 520 || "ontouchstart" in window;
     }
 
     startWalkingSound() {
@@ -167,6 +176,10 @@ class Character extends MovableObject {
     }
 
     playGetHitSound() {
+        if (this.isMobileDevice()) {
+            return;
+        }
+
         if (!this.isGetHitSoundPlaying) {
             this.gethit_sound.currentTime = 0;
             this.gethit_sound.play().catch(() => {});

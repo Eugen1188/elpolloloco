@@ -33,12 +33,22 @@ class World {
 
     startGameLoop() {
         let frameCounter = 0;
+        let lastFrameTime = 0;
+        const desktopFrameDuration = 1000 / 60;
 
-        const loop = () => {
-            frameCounter++;
+        const loop = (timestamp) => {
+            const isMobile = this.isMobileDevice();
 
-            this.updateGame(frameCounter);
-            this.draw();
+            if (isMobile) {
+                frameCounter++;
+                this.updateGame(frameCounter);
+                this.draw();
+            } else if (timestamp - lastFrameTime >= desktopFrameDuration) {
+                lastFrameTime = timestamp - ((timestamp - lastFrameTime) % desktopFrameDuration);
+                frameCounter++;
+                this.updateGame(frameCounter);
+                this.draw();
+            }
 
             requestAnimationFrame(loop);
         };
@@ -46,8 +56,12 @@ class World {
         requestAnimationFrame(loop);
     }
 
+    isMobileDevice() {
+        return window.innerWidth <= 900 || window.innerHeight <= 520 || "ontouchstart" in window;
+    }
+
     updateGame(frameCounter) {
-        const isMobile = window.innerWidth <= 720 || window.innerHeight <= 480;
+        const isMobile = this.isMobileDevice();
 
         this.character.updateGravity();
         this.character.movement();
